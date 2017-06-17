@@ -26,7 +26,15 @@
 (defn declared-type-hinted [^long i]
   "ok")
 
+(set! *warn-on-reflection* true)
 
+(defn ^:declared declared-primitive-types-hinted [^long i obj])
+
+(defn primitive-types-hinted-case []
+  (declared-primitive-types-hinted 1 ""))
+
+(defn declared-primitive-types-hinted [^long i ^String obj]
+  (.length obj))
 
 (defn -main [& args]
   (try
@@ -44,6 +52,12 @@
   (try
     (prn "type hinted")
     (type-hinted-case)
+    (prn "it went ok")
+    (catch Throwable ex
+      (prn ex)))
+  (try
+    (prn "primitive types hinted")
+    (primitive-types-hinted-case)
     (prn "it went ok")
     (catch Throwable ex
       (prn ex))))
