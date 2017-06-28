@@ -1,5 +1,6 @@
 (ns reproduce.core
-  (:require [datascript.db :as db])
+  (:require [datascript.db :as db]
+            [datascript.core :as d])
   (:gen-class))
 
 (defn datascript-test-case []
@@ -26,6 +27,8 @@
 (defn declared-type-hinted [^long i]
   "ok")
 
+ 
+
 (set! *warn-on-reflection* true)
 
 (defn ^:declared declared-primitive-types-hinted [^long i obj])
@@ -35,6 +38,12 @@
 
 (defn declared-primitive-types-hinted [^long i ^String obj]
   (.length obj))
+
+
+(defn get-unique-by-value-test-case []
+  (let [conn (d/create-conn {:uni {:db/unique :db.unique/identity}})]
+    (d/transact conn [{:uni :foo}])
+    (assert (some? (:db/id (d/entity (d/db conn) [:uni :foo]))))))
 
 (defn -main [& args]
   (try
@@ -60,4 +69,11 @@
     (primitive-types-hinted-case)
     (prn "it went ok")
     (catch Throwable ex
+      (prn ex)))
+  (try
+    (prn "test getting unique by value")
+    (get-unique-by-value-test-case)
+    (prn "it went ok")
+    (catch Throwable ex
       (prn ex))))
+
